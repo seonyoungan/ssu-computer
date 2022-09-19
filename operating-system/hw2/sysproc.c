@@ -100,3 +100,12 @@ sys_memsize(void)
   
   return size;
 }
+
+int
+sys_trace(void)
+{
+  if (argint(0, &myproc()->tm) < 0) //ssu_trace mask
+    return -1;
+  
+  return 0;
+}

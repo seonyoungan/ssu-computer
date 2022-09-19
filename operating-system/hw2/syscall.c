@@ -104,6 +104,7 @@ extern int sys_wait(void);
 extern int sys_write(void);
 extern int sys_uptime(void);
 extern int sys_memsize(void);
+extern int sys_trace(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -128,6 +129,34 @@ static int (*syscalls[])(void) = {
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
 [SYS_memsize]   sys_memsize,
+[SYS_trace]   sys_trace,
+};
+
+//ssu_trace mask
+char *states[] = {
+[SYS_fork]   "fork", //1
+[SYS_exit]   "exit", //2
+[SYS_wait]   "wait", //3
+[SYS_pipe]   "pipe", //4
+[SYS_read]   "read", //5
+[SYS_kill]   "kill", //6
+[SYS_exec]   "exec", //7
+[SYS_fstat]  "fstat", //8
+[SYS_chdir]  "chdir", //9
+[SYS_dup]    "dup", //10
+[SYS_getpid] "getpid", //11
+[SYS_sbrk]   "sbrk", //12
+[SYS_sleep]  "sleep", //13
+[SYS_uptime] "uptime", //14
+[SYS_open]   "open", //15
+[SYS_write]  "write", //16
+[SYS_mknod]  "mknod", //17
+[SYS_unlink] "unlink", // 18
+[SYS_link]   "link", //19
+[SYS_mkdir]  "mkdir", //20
+[SYS_close]  "close", //21
+[SYS_memsize]   "sys_memsize", //22
+[SYS_trace]   "sys_trace", //23
 };
 
 void
@@ -139,9 +168,18 @@ syscall(void)
   num = curproc->tf->eax;
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
     curproc->tf->eax = syscalls[num]();
+    
   } else {
     cprintf("%d %s: unknown sys call %d\n",
             curproc->pid, curproc->name, num);
     curproc->tf->eax = -1;
   }
+  /*if(curproc->tm >> num){ 
+    cprintf("syscall traced: pid = %d, syscall = %s %d returned\n", curproc->pid, states[num], num);
+  }*/
+  if((curproc->tm) > 0){
+    if((curproc->tm >>num)){
+    	cprintf("syscall traced: pid = %d, syscall = %s, %d returned\n", curproc->pid, states[num], curproc->tf->eax);
+      }
+    } // ssu_trace mask
 }
