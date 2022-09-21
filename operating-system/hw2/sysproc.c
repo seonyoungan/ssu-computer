@@ -102,10 +102,14 @@ sys_memsize(void)
 }
 
 int
-sys_trace(void)
+sys_trace(void) //ssu_trace mask
 {
-  if (argint(0, &myproc()->tm) < 0) //ssu_trace mask
-    return -1;
+  int tracemask; 
+  
+  struct proc *p = myproc();
+  if(argint(0, &tracemask) < 0)
+    return -1; 
+  p->tm = tracemask;
   
   return 0;
 }
