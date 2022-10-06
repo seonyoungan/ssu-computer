@@ -147,3 +147,163 @@ statement_list_opt
 	: {$$=makeNode(N_STMT_LIST_NIL,NIL,NIL,NIL);}
 	|statement_list {$$=$1;}
 	;
+statment_list
+	: statement {$$=makeNode(N_STMT_LIST,$1,NIL,makeNode(N_STMT_LIST_NIL,NIL,NIL,NIL));}
+	| statement_list statement {$$=makeNodeList(N_STMT_LIST,$1,$2);}
+	;
+statement
+	:labeled_statement {$$=$1;}
+	|compound_statement {$$=$1;}
+	|expression_statement {$$=$1;}
+	|selection_statement {$$=$1;}
+	|iteration_statement {$$=1;}
+	|jump_statement {$$=1;}
+	;
+labeled_statement
+	:CASE_SYM constant_expression COLON statement {$$=makeNode(N_STMT_LABEL_CASE,$1,NIL,$4);}
+	|DEFAULT_SYM COLON statement {$$=makeNode(N_STMT_LABEL_DEFAULT,NIL,$3,NIL);}
+	;
+compound_statement
+	:LR {$$=current_id;current_level++} declaration_list_opt statement_list_opt RR {checkForwardReference(); $$=makeNode(N_STMT_COMPOUND,$3,NIL,$4); current_id=$2;current_level--;}
+	;
+expression_statement
+	:SEMICOLON {$$=makeNode(N_STMT_EMPTY,NIL,NIL,NIL);}
+	|expression SEMICOLON {$$=makeNode(N_STMT_EXPRESSION,NIL,$3,NIL);}
+	;
+selection_statement
+	:IF_SYM LP expression RP statement {$$=makeNode(N_STMT_IF,$3,NIL,$5);}
+	|IF_SYM LP expression RP statement ELSE_SYM statement {$$=makeNode(N_STMT_IF_ELSE,$3,$5,$7);}
+	|SWITCH_SYM LP expreesion RP statement {$$=makeNode(N_STMT_SWITCH,$3,NIL,$5);}
+	;
+iteration_statement
+	:WHILE_SYM LP expression RP statement {$$=makeNode(N_STMT_WHILE,$3,NIL,$5);}
+	|DO_SYM statement WHILE_SYM LP expression RP SEMICOLON {$$=MAKEnODE(N_STMT_DO,$2,NIL,$5);}
+	|FOR_SYM LP for_expression RP statement {$$=makeNode(N_STMT_FOR,$3,NIL,$5);}
+	;
+for_expression
+	:expression_opt SEMICOLON expression_opt SEMICOLON expression_opt {$$=makeNode(N_FOR_EXP,$1,$3,$5);}
+	;
+expression_opt
+	:/*empty*/ {$$=NIL;}
+	|expression {$$=$1;}
+	;
+jump_statement
+	:RETURN_SYM expression_opt SEMICOLON {$$=makeNode(N_STMT_RETURN, NIL, $2, NIL);}
+	|CONTINUME_SYM SEMICOLON {$$=makeNode(N_STMT_CONTINUE,NIL,NIL,NIL);}
+	|BREAK_SYM SEMICOLON {$$=makeNode(N_STMT_BREAK,NIL,NIL,NIL);}
+	;
+arg_expression_list_opt
+	: {$$=makeNode(N_ARG_LIST_NIL,NIL,NIL,NIL);}
+	|arg_expression_list {$$=$1;}
+	;
+arg_expression_list
+	:assignment_expression {$$=makeNode(N_ARG_LIST,$1,NIL,makeNode(N_ARG_LIST_NIL,NIL,NIL,NIL));}
+	|arg_expression_list COMMA assignment_expression {$$=makeNode(N_ARG_LIST,$1,$3);}
+	;
+constant_expression_opt
+	: {$$=NIL;}
+	|constant_expression {$$=$1;}
+	;
+constant_expression
+	:expression {$$=$1;}
+	;
+expression
+	:comma_expression {$$=$1;}
+	;
+comma_expression
+	:assignment_expression {$$=$1;}
+	;
+assignment_expression
+	:conditional_expression {$$=$1;}
+	|unary_expression ASSIGN assignment_expression {$$=makeNode(N_EXP_ASSIGN,$1,NIL,$3);}
+	;
+conditional_expression
+	:logical_or_expression {$$=$1;}
+	;
+logical_or_expression
+	:logical_and_expression {$$=$1;}
+	|logical_or_expression BARBAR logical_and_expression {$$=makeNode(N_EXP_OR,$1,NIL,$3);}
+	;
+bitwise_or_expression
+	:bitwise_xor_expression {$$=$1;}
+	;
+bitwise_xor_expression
+	:bitwise_and_expression {$$=$1;}
+	;
+bitwise_and_expression
+	:equality_expression {$$=$1;}
+	;
+equality_expresison
+	:relational_expression {$$=$1;}
+	|equality_expression EQL relational_expression {$$=makeNode(N_EXP_EQL,$1,NIL,$3);}
+	|equality_expression NEQ relational_expression {$$=makeNode(N_EXP_NEQ,$1,NIL,$3);}
+	;
+relational_expression
+	:shift_expression {$$=$1;}
+	|relational_expression LSS shift_expression {$$=makeNode(N_EXP_LSS,$1,NIL,$3);}
+	|relational_expression GTR shift_expression {$$=makeNode(N_EXP_GTR,$1,NIL,$3);}
+	|relational_expression GEQ shift_expression {$$=makeNode(N_EXP_GEQ,$1,NIL,$3);}
+	;
+shift_expression
+	:additive_expression {$$=$1;}
+	;
+additive_expression
+	:multiplicative_expression {$$=$1;}
+	|additive_expression PLUS multiplicative_expression {$$=makeNode(N_EXP_ADD,$1,NIL,$3);}
+	|additive_expression MINUS multiplicative_expression {$$=makeNode(N_EXP_SUB,$1,NIL,$3);}
+	;
+multiplicative_expression
+	:cast_expression {$$=$1;}
+	|multiplicative_expression STAR cast_expression {$$=makeNode(N_EXP_MUL,$1,NIL,$3);}
+	|multiplicative_expression SLASH cat_expression {$$=makeNode(N_EXP_DIV,$1,NIL,$3);}
+	|multiplicative_expression PERCENT case_expression {$$=makeNode(N_EXP_MOD,$1,NIL,$3);}
+	;
+cast_expression
+	:unary_expression {$$=$1;}
+	|LP type_name RP cast_expression {$$=makeNode(N_EXP_CAST,$2,NIL,$4);}
+	;
+unary_expression
+	:postfix_expression {$$=$1;}
+	|PLUSPLUS unary_expression {$$=makeNode(N_EXP_PRE_INC,NIL,$2,NIL);}
+	|MINUSMINUS unary_expression {$$=makeNode(N_EXP_PRE_DEC,NIL,$2,NIL);}
+	|AMP case_expression {$$=makeNode(N_EXP_AMP,NIL,$2,NIL);}
+	|STAR cast_expression {$$=makeNode(N_EXP_STAR,NIL,$2,NIL);}
+	|EXCL cast_expression {$$=makeNode(N_EXP_NOT,NIL,$2,NIL);}
+	|MINUS cast_expression {$$=makeNode(N_EXP_MINUS,NIL,$2,NIL);}
+	|PLUS cast_expression {$$=makeNode(N_EXP_PLUS,NIL,$2,NIL);}
+	|SIZEOF_SYM unary_expression {$$=makeNode(N_EXP_SIZE_EXP,nil,$2,NIL);}
+	|SIZEOF_SYM LP type_name RP {$$=makeNode(N_EXP_SIZE_TYPE,NIL,$3,NIL);}
+	;
+postfix_expression
+	:primary_expression {$$=$1;}
+	|postfix_expression LB expression RB {$$=makeNode(N_EXP_ARRAY,$1,NIL,$3);}
+	|postfix_expression LP arg_expression_list_opt RP {$$=makeNode(N_EXP_FUNCTION_CALL,$1,NIL,$3);}
+	|postfix_expression PERIOD IDENTIFIER {$$=makeNode(N_EXP_STRUCT,$1,NIL,$3);}
+	|postfix_expression ARROW IDENTIFIER {$$=makeNode(N_EXP_ARROW,$1,NIL,$3};
+	|postfix_expression PLUSPLUS {$$=makeNode(N_EXP_POST_INC,NIL,$1,NIL);}
+	|postfix_expression MINUSMINUS {$$=makeNode(N_EXP_POST_DEC,NIL,$1,NIL);}
+	;
+primary_expression
+	:IDENTIFIER {$$=makeNode(N_EXP_IDENT,NIL,getIdentifierDeclared($1),NIL);}
+	|INTEGER_CONSTANT {$$=makenode(N_EXP_INT_CONST,NIL,$1,NIL);}
+	|FLOAT_CONSTANT {$$=makenode(N_EXP_FLOAT_CONST,NIL,$1,NIL);}
+	|CHARACTER_CONSTANT {$$=makenode(N_EXP_CHARACTER_CONST,NIL,$1,NIL);}
+	|STRING_LITERAL {$$=makeNode(N_EXP_STRING_LITERAL,NIL,$1,NIL);}
+	|LP expression RP {$$=$2;}
+	;
+type_name
+	:declaration_specifiers abstract_declarator_opt {$$=setTypeNameSpecifier($2,$1};}
+	;
+%%
+extern char *yytext;
+int line_no = 1;
+yyerror(char *ss){
+	printf("line %d: %s near %s\n", line_no,s,yytext);
+}
+int yywrap(){
+	return 1;
+}
+void main(){
+	yyparse();
+	printf("success!\n");
+}
