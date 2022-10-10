@@ -13,6 +13,6 @@ if src is None:
 #constrast 효과
 src = cv.convertScaleAbs(src, alpha=value+1, beta=-average*value) # 포화 연산
 
-cv.imwrite('constrast.jpg', src) # 결과 저장
+cv.imwrite('contrast.jpg', src) # 결과 저장
 cv.waitKey()  # 키누를때까지 기다리게하기
 cv.destroyAllWindows() # 종료
