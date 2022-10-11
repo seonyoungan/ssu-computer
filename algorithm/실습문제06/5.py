@@ -8,7 +8,7 @@ def dfs(x, visited):
         if graph[x][0]:
             return graph[x][0]
     for i in range(1, n):
-        if not graph[x][y]:
+        if not graph[x][i]:
             continue
         if visited & (1 << i):
             continue
