@@ -8,11 +8,12 @@
 #include "proc.h"
 
 int
-sys_weightset(void)
+sys_weightset(void) // 20201696. 시스템콜 추가 작업 및 proc.c의 함수에 접근하기 위하여 do_weight()함수 사용
 {
   int weight;
   if(argint(0, &weight) < 0)
     return -1;
+  do_weightset(weight);
   return weight;
 }
 int

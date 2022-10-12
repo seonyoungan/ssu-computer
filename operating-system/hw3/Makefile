@@ -83,15 +83,20 @@ ASFLAGS = -m32 -gdwarf-2 -Wa,-divide
 LDFLAGS += -m $(shell $(LD) -V | grep elf_i386 2>/dev/null | head -n 1)
 
 # Disable PIE when possible (for Ubuntu 16.10 toolchain)
-ifneq ($(shell $(CC) -dumpspecs 2>/dev/null | grep -e '[^f]no-pie'),)
+ifneq ($(shell $(CC) -dumpspecs 2>/dev/null | grep -e '[^f]no-pie'),) 
 CFLAGS += -fno-pie -no-pie
 endif
 ifneq ($(shell $(CC) -dumpspecs 2>/dev/null | grep -e '[^f]nopie'),)
 CFLAGS += -fno-pie -nopie
 endif
+#20201696
+# 디버그 변수설정(make할 때마다 인자로 받기 위함) 
+#ifeq: 변수 2개가 다르면 True, ifeq: 변수 2개가 같으면 True
 ifeq ($(debug),1)
-CFLAGS += -DDEBUG # 추가: 디버그 변수설정(make할 때마다 인자로 받기 위함)
+CFLAGS += -DDEBUG
 endif
+
+
 
 xv6.img: bootblock kernel
 	dd if=/dev/zero of=xv6.img count=10000
@@ -220,7 +225,7 @@ QEMUGDB = $(shell if $(QEMU) -help | grep -q '^-gdb'; \
 	then echo "-gdb tcp::$(GDBPORT)"; \
 	else echo "-s -p $(GDBPORT)"; fi)
 ifndef CPUS
-CPUS := 1 # 변경: xv6실행시 2개의 cpu코어에 1개 cpu코어로 변경
+CPUS := 1 # 20201696 xv6실행시 2개의 cpu코어에 1개 cpu코어로 변경
 endif
 QEMUOPTS = -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA)
 

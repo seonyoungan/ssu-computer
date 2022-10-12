@@ -7,18 +7,19 @@
 #include "proc.h"
 #include "spinlock.h"
 
-#define TIME_SLICE 10000000
+#define TIME_SLICE 10000000 
 #define NULL ((void *)0)
+
 
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
-  long long minimum; //가장 작은 우선순위 
+  long long minimum; // 20201696. 가장 작은 우선순위 
 } ptable;
 
 static struct proc *initproc;
 
-int weight = 1; //가중치
+int weight = 1; // 20201696. 초기 가중치
 int nextpid = 1;
 
 extern void forkret(void);
@@ -26,49 +27,62 @@ extern void trapret(void);
 
 static void wakeup1(void *chan);
 
-struct proc *ssu_schedule()
+
+// 20201696. 새 프로세스에 큰 가중치를 부여해주는 ssu_schedule().
+// 20201696. 이 함수는 scheduled()함수 내에서 호출되어 실행됨
+struct proc *ssu_schedule() 
 {
   struct proc *p;
   struct proc *ret = NULL;
   
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-  //유저당 사용가능한 프로세스의 최대수보다 작을 때까지 p++씩 증가하며 반복 
+  //20201696.유저당 사용가능한 프로세스의 최대수보다 작을 때까지 p++씩 증가하며 반복 
   {
-    if(p->state == RUNNABLE) //RUNNABLE상태이면
+    if(p->state == RUNNABLE) //20201696.RUNNABLE상태이면
     {
-      if(ret == NULL || p->priority < ret->priority) //가장 낮은 우선순위를 선택함 
+      if(ret == NULL || p->priority < ret->priority) //20201696.가장 낮은 우선순위를 선택함 
       {
         ret = p;
       }
     }
   }
-  #ifdef DEBUG 
-    // debug시 출력될 문구 선언
-    cprintf("PID: %d, NAME: %s, WEIGHT: %d, PRIORITY: %d\n", ret->pid, ret->name, ret->weight, ret->priority);
+  // 20201696. make debug=1 qemu-nox를 실행시킬 때 출력할 메세지임.
+  // 20201696. makefile에서 ifeq를 읽은 후 proc.c의 ifdef문(아래)을 통해 출력문구를 읽음
+  #ifdef DEBUG
+    if (ret)
+      cprintf("PID: %d, NAME: %s, WEIGHT: %d, PRIORITY: %d\n", ret->pid, ret->name, ret->weight, ret->priority);
   #endif
-    return ret;
+  return ret;
 }
 
 void
 update_priority(struct proc *proc) 
 {
   proc->priority = proc->priority + (TIME_SLICE / proc->weight); 
-  //기존 우선순위 + (타임슬라이스 / 가중치)하여 우선순위 업데이트함 
+  //20201696. 기존 우선순위 + (타임슬라이스 / 가중치)하여 우선순위 업데이트함 
 }
 
 void
-update_minimum(struct proc *min)  //가장 작은 우선순위를 지정함 
+update_minimum()  //20201696. 가장 작은 우선순위를 지정하고 업데이
 {
-  if(min != NULL)
-    ptable.minimum = min->priority;
+  struct proc *p;
+  struct proc *min = NULL;
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+  {
+    if(p->state == RUNNABLE) //20201696. runnable상태라면
+    {
+      if(min==NULL || p->priority < min->priority) // 20201696. null이거나 proc->priority가 min->priority보다 작으면
+      	min = p; // p를 min에 대입하여 min이 항상 작은 우선순위를 지정하도록 관리함 
+    }
+  }
+  if(min != NULL) //20201696. null이 아닌 경우는
+    ptable.minimum = min->priority; // 20201696. 그 값을 ptable.minimum에 넣어줌
 }
 
 
 void
-assign_min_priority(struct proc *proc)  //추가 설명 필요 
+assign_min_priority(struct proc *proc)  //20201696. 최소 우선순위값을 배치시킨다. proc->priority가 가리키고 있는 값은 ptable 구조체가 관리하고 있는 멤버변수
 {
-  if(proc->priority < ptable.minimum)
-    ptable.minimum = proc->priority;
   proc->priority = ptable.minimum;
 }
 
@@ -139,11 +153,12 @@ allocproc(void)
   return 0;
 
 found:
+  p->weight = weight++; // 20201696. weight변수의 초기값은 1임. process가 생성되면 그에 따라 weight값을 가중시켜야 하므로 ++처리함
+  
   p->state = EMBRYO;
   p->pid = nextpid++;
-  p->priority = ptable.minimum;
-  p->weight = weight++;
-  assign_min_priority(p); //설명 필요
+
+  assign_min_priority(p); //20201696. 가장 작은 값인 우선순위 배
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -177,9 +192,9 @@ userinit(void)
 {
   struct proc *p;
   extern char _binary_initcode_start[], _binary_initcode_size[];
-
+  ptable.minimum = 3; //20201696.  시스템 시작시 세개의 유저 프로세스 생성되므로 최소 우선순위값도 3으로 지정함
   p = allocproc();
-  ptable.minimum = 3; // 시스템 시작시 세개의 유저 프로세스 생성되므로 최소 우선순위값도 3으로 지정함
+
   initproc = p;
   if((p->pgdir = setupkvm()) == 0)
     panic("userinit: out of memory?");
@@ -386,34 +401,35 @@ scheduler(void)
     sti();
 
     // Loop over process table looking for process to run.
-    acquire(&ptable.lock);
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-        continue;
-      p = ssu_schedule();
-      if (p == 0)
-      {
-        release(&ptable.lock);
-        continue;
-      }
-      
+    acquire(&ptable.lock); // 20201696. acquire() ~ release() : 프로세스간 lock처리를 위함 
+    p = ssu_schedule(); // 20201696. 우선순위 기반 스케줄러 호출
+    
+    if (p == NULL)
+    {
+      release(&ptable.lock);
+      continue;
+    }
+
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       
-      c->proc = p;
-      switchuvm(p);
-      p->state = RUNNING;
+    c->proc = p;
+    switchuvm(p);
+    p->state = RUNNING;
 
-      swtch(&(c->scheduler), p->context);
-      switchkvm();
+    swtch(&(c->scheduler), p->context);
+    switchkvm();
+    
+    // 20201696. 업데이트
+    update_minimum();
+    update_priority(p);    
+    // Process is done running for now.
+    // It should have changed its p->state before coming back.
 
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
-      update_priority(p);
-      update_minimum(p);
-      c->proc = 0;
-    }
+
+    c->proc = 0;
+
     release(&ptable.lock);
   }
 }
@@ -523,8 +539,10 @@ wakeup1(void *chan)
   struct proc *p;
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    if(p->state == SLEEPING && p->chan == chan)
-      p->state = RUNNABLE;
+    if(p->state == SLEEPING && p->chan == chan){
+      p->state = RUNNABLE; // 20201696. wakeup() -> wakeup1()하여 Runnable 상태로 깨우기
+      assign_min_priority(p); // 20201696. 잠들기 전의 우선순위를 가져야함
+    }
 }
 
 // Wake up all processes sleeping on chan.
@@ -596,10 +614,11 @@ procdump(void)
   }
 }
 
+// 20201696. 시스템콜로 사용해야하므로 커널함수 선언 (sdebug에서 사용하기 위함)
 void do_weightset(int weight)
 {
   acquire(&ptable.lock);
-  myproc()->weight = weight; //설명 필요
+  myproc()->weight = weight; 
   release(&ptable.lock);
 }
 
