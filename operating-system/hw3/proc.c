@@ -10,16 +10,17 @@
 #define TIME_SLICE 10000000 
 #define NULL ((void *)0)
 
+int weight = 1; // 20201696. 초기값이 1인 가중치변수 선언
 
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
-  long long minimum; // 20201696. 가장 작은 우선순위 
+  long minimum; // 20201696. 가장 작은 우선순위 
 } ptable;
 
 static struct proc *initproc;
 
-int weight = 1; // 20201696. 초기 가중치
+
 int nextpid = 1;
 
 extern void forkret(void);
@@ -45,9 +46,10 @@ struct proc *ssu_schedule()
         ret = p;
       }
     }
-  }
   // 20201696. make debug=1 qemu-nox를 실행시킬 때 출력할 메세지임.
   // 20201696. makefile에서 ifeq를 읽은 후 proc.c의 ifdef문(아래)을 통해 출력문구를 읽음
+
+  }
   #ifdef DEBUG
     if (ret)
       cprintf("PID: %d, NAME: %s, WEIGHT: %d, PRIORITY: %d\n", ret->pid, ret->name, ret->weight, ret->priority);
@@ -65,8 +67,9 @@ update_priority(struct proc *proc)
 void
 update_minimum()  //20201696. 가장 작은 우선순위를 지정하고 업데이
 {
-  struct proc *p;
   struct proc *min = NULL;
+  struct proc *p;
+
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
   {
     if(p->state == RUNNABLE) //20201696. runnable상태라면
@@ -154,11 +157,11 @@ allocproc(void)
 
 found:
   p->weight = weight++; // 20201696. weight변수의 초기값은 1임. process가 생성되면 그에 따라 weight값을 가중시켜야 하므로 ++처리함
-  
   p->state = EMBRYO;
   p->pid = nextpid++;
 
-  assign_min_priority(p); //20201696. 가장 작은 값인 우선순위 배
+  assign_min_priority(p); //20201696. 가장 작은 우선순위 배치.
+  
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -192,6 +195,7 @@ userinit(void)
 {
   struct proc *p;
   extern char _binary_initcode_start[], _binary_initcode_size[];
+  
   ptable.minimum = 3; //20201696.  시스템 시작시 세개의 유저 프로세스 생성되므로 최소 우선순위값도 3으로 지정함
   p = allocproc();
 
@@ -402,33 +406,32 @@ scheduler(void)
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock); // 20201696. acquire() ~ release() : 프로세스간 lock처리를 위함 
-    p = ssu_schedule(); // 20201696. 우선순위 기반 스케줄러 호출
+      p = ssu_schedule(); // 20201696. 우선순위 기반 스케줄러 호출
     
-    if (p == NULL)
-    {
-      release(&ptable.lock);
-      continue;
-    }
+      if (p == NULL)
+      {
+        release(&ptable.lock);
+        continue;
+      }
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
       
-    c->proc = p;
-    switchuvm(p);
-    p->state = RUNNING;
+      c->proc = p;
+      switchuvm(p);
+      p->state = RUNNING;
 
-    swtch(&(c->scheduler), p->context);
-    switchkvm();
+      swtch(&(c->scheduler), p->context);
+      switchkvm();
     
     // 20201696. 업데이트
-    update_minimum();
-    update_priority(p);    
+      update_priority(p); 
+      update_minimum();   
     // Process is done running for now.
     // It should have changed its p->state before coming back.
 
-
-    c->proc = 0;
+      c->proc = 0;
 
     release(&ptable.lock);
   }
