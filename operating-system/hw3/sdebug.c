@@ -3,8 +3,8 @@
 #include "stat.h"
 
 #define PNUM 5 // process 개수
-//#define PRINT_CYCLE 100000000 // process가 정보를 출력하는 주기(명세서 속 주기) -test용
-#define PRINT_CYCLE 10000000 // process가 정보를 출력하는 주기(구글클래스룸 댓글 상 교수님께서 언급하신 주기)
+//#define PRINT_CYCLE 100000000 // process가 정보를 출력하는 주기(pdf에 기재된 값) -test용
+#define PRINT_CYCLE 10000000 // process가 정보를 출력하는 주기(구글클래스룸 댓글 상 교수님께서 언급하신 값)
 #define TOTAL_COUNTER 500000000 // process가 종료될 때 counter값
 
 void sdebug_func(void);
@@ -60,26 +60,32 @@ void sdebug_func(void)
         exit();
       }
     }
+    
   //wait()시스템콜을 통해 자식프로세스 종료 기다리기
-  if(n == 1000)
+  if(pid != 0)
   {
-    printf(1, "fork claimed to work PNUM times!\n");
-    exit();
-  }
-
-  for(; n > 0; n--)
-  {
-    if(wait() < 0)
+  
+    if(n == 1000)
     {
-      printf(1, "wait stopped early\n");
+      printf(1, "fork claimed to work PNUM times!\n");
       exit();
     }
-  }
+
+    for(; n > 0; n--)
+    {
+      if(wait() < 0)
+      {
+        printf(1, "wait stopped early\n");
+        exit();
+      }
+    }
   
-  if(wait() != -1){
-    printf(1, "wait got too many\n");
-    exit();
-  }  
+    if(wait() != -1){
+      printf(1, "wait got too many\n");
+      exit();
+    }  
+  }
+
 
   printf(1, "end of sdebug command\n");
 
