@@ -121,7 +121,7 @@ int             wait(void);
 void            wakeup(void*);
 void            yield(void);
 struct proc*    ssu_schedule();
-void            do_weightset(int); //20201696
+void            do_weightset(int); //20201696. 시스템콜 정의(커널 함수), 사용자모드 user.h에도 정의하였음
 
 // swtch.S
 void            swtch(struct context**, struct context*);

@@ -49,8 +49,8 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
-  long priority;		// proc에서 스케줄러 구현에 필요한 우선순위
-  uint weight;		      	// sdebug 명령어 사용시 생성되는프로세스의 가중치값
+  long priority;		// 20201696. proc에서 스케줄러 구현에 필요한 우선순위
+  int weight;		      	// 20201696. sdebug 명령어 사용시 생성되는프로세스의 가중치값
   
 };
 

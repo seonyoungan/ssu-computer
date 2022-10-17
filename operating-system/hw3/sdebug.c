@@ -23,37 +23,37 @@ void sdebug_func(void)
   for(n=0;n<PNUM;n++)//프로세스 갯수만큼 반복  
   {  
     pid = fork(); //새 프로세스 생성
-    if(pid < 0)
+    if(pid < 0) //자식 프로세스가 아닌 경우
       break;
     if(pid == 0) //자식 프로세스인 경우
     { 
-        int counter = 0;
+        long long counter = 0;
+	long long print_counter = 0;
         int add = 1; //1씩 증가 시키며 부여할 값
         int first_ticks = uptime(); //프로세스 시작 시간
-        int last_ticks;
-        long weight = weightset(n+add);
-        int flag = 1;
-        
-        if(weight == 0)
-        {
-          printf(1,"ERROR! PID: %d, WEIGHT: %d\n", getpid(), weight);
-        }
+        int weight = weightset(n+add); //시스템 콜을 통해 가중치를 부여함
+        int flag = 1; // 수행 횟수
 
+        
+        //if(weight == 0)
+        //{
+        //  printf(1,"ERROR! PID: %d, WEIGHT: %d\n", getpid(), weight);
+        //}
+        
 	while(counter <= TOTAL_COUNTER)
 	{
 	  counter++;
-	  int print_counter = counter % PRINT_CYCLE;
-	  
-	  
-	  if(print_counter == 0)
+	  print_counter++;
+	
+	  if(PRINT_CYCLE <= print_counter)
 	  {
-	    if(flag)
+	    if(flag) //flag에 값이 존재하면 조건문 실행
 	    {
-	      last_ticks = uptime(); //출력 시간
+	      int last_ticks = uptime(); //종료 시간
 	      printf(1,"PID: %d, WEIGHT: %d, TIMES: %d ms\n", getpid(), weight, (last_ticks-first_ticks)*10);	  
-	      flag = 0;
+	      flag = 0; //프로세스의 정보가 출력되었으므로 flag에 0값 대입
 	    }
-	    print_counter = PRINT_CYCLE;
+	    print_counter = 0;
 	  }
         }
         printf(1,"PID: %d, terminated\n", getpid()); //현재의 프로세스 아이디(자식)를 가져오는 시스템콜 
