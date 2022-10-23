@@ -59,7 +59,7 @@ struct proc *ssu_schedule()
     }
   // 20201696. make debug=1 qemu-nox를 실행시킬 때 출력할 메세지임.
   // 20201696. makefile에서 ifeq를 읽은 후 proc.c의 ifdef문(아래)을 통해 출력문구를 읽음
-
+//t
   }
   #ifdef DEBUG
     if (ret)
