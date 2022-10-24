@@ -14,15 +14,15 @@ def dfs(x, visited):
         return dp[x][visited]
     
     for i in range(1, n): #모든 도시 탐방
-        if not graph[x][i] #가는 경로가 없으면
+        if not graph[x][i]: #가는 경로가 없으면
             continue #스킵
-        if visited & (1<<i) #이미 방문했다면
+        if visited & (1<<i): #이미 방문했다면
             continue #스킵
 
         #점화식
         dp[x][visited] = min(dp[x][visited], dfs(i, visited | (1<<i)) + graph[x][i])
         return dp[x][visited]
-gprah = []
+graph = []
 for i in range(n):
     graph.append(list(map(int, input().split())))
 
