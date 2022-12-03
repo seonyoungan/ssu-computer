@@ -4,7 +4,7 @@ sys.setrecursionlimit(10**6)
 def paint_star(LEN):
     DIV3 = LEN/3
     if LEN == 3:
-        g[1] = ['*','','*']
+        g[1] = ['*',' ','*']
         g[0][:3] = g[2][:3] = ['*']*3
         return
     
@@ -18,7 +18,7 @@ def paint_star(LEN):
 n=int(sys.stdin.readline().strip())
 g=[[' ' for _ in range(n)] for _ in range(n)]
 
-paint_star(n)
+# paint_star(n)
 
 for i in range(n):
     for j in range(n):

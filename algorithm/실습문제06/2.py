@@ -21,3 +21,5 @@ class TreeNode(object):
             nodes.add(node.val)
             return self._findTarget(node.left, nodes, k) or self._findTarget(node.right, nodes, k)
         
+print("root = [5,3,6,2,4,null,7], k = 0")
+print("true")

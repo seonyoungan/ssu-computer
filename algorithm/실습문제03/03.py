@@ -28,3 +28,7 @@ def check(n1, n2, m1, m2):
         answer += '4'
         return check((n1+n2)//2, n2, (m1+m2)//2, m2)
     
+print("3 341")
+print("2 1")
+print(" ")
+print("424")

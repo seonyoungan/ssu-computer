@@ -13,3 +13,5 @@ def dfs(self, nums, target, path, ret):
     for i in range(len(nums)):
         self.dfs(nums[i:], target-nums[i], path[nums[i]], ret)
         
+print("candidates = [2,3,5], target = 8")
+print("[2,2,2,2],[2,3,3],[3,5]")

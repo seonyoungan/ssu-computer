@@ -12,3 +12,4 @@ class Solution:
                 if s[i-1]=="(":
                     if s[i-dp[i-1]-1] == "(":
                         dp[i] = dp[i-2] + 2 + dp[i-dp[i-2] -2 ]
+                        
