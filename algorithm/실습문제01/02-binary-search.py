@@ -1,25 +1,20 @@
 
 
+class Solution(object):
+    def searchInsert(self, nums, target):
+        left, right = 0, len(nums)-1 #left = 0, right = 배열의 길이 
+        while left <= right:
+            mid = (left + right) // 2
+            if nums[mid] == target:
+                return mid
+            elif nums[mid] < target:
+                left = mid + 1
+            else :
+                right = mid - 1
+        return (right + 1)
 
-def binarySearch(nums, target, start, end):
-
-    while start <= end:
-        mid = (start + end) // 2
-        if nums[mid] == target:
-            print(mid)
-            break
-        elif nums[mid] < target:
-            start = mid + 1
-        elif nums[mid] > target:
-            end = mid - 1
-
-
-nums = [1, 3, 5, 6]
-target = 8
-
-length = len(nums) #길이
-start = 0 #첫번째 요소
-end = length - 1 #마지막 요소
-
-print("nums =", nums, "target =", target)
-binarySearch(nums, target, start, end)
+nums = [1,3,5,6]
+solution = Solution()
+print("nums = ", nums, end=' ')
+target = int(input("target= "))
+print(solution.searchInsert(nums, target))
