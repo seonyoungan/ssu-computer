@@ -1,1 +1,8 @@
-static int *a[1+(2*3)];
+int main()
+{
+	int i;
+	for (i = 0; i < 5; ++i) {
+	printf("%d\n", i);
+	}
+	return 0;
+}

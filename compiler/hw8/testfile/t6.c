@@ -1,9 +1,15 @@
 int main()
 {
-	int i=0;
-	for (i=0;i<10;i++)
-	{
-		if(i==1)
-			continue;
-	}
+	int a;
+	int b;
+	
+	scanf("%d %d", &a, &b);
+
+	printf("result : %d\n", a + b);
+	printf("result : %d\n", a - b);
+	printf("result : %d\n", a * b);
+	printf("result : %d\n", a / b);
+	printf("result : %d\n", a % b);
+
+	return 0;
 }

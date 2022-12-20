@@ -1,9 +1,11 @@
-struct st {
+int main()
+{
 	int a;
-};
-
-struct st *a;
-
-int main(){
-	int z = a->a;
+	int b;
+	int sum;
+	a = 100;
+	b = 200;
+	sum = a + b;
+	printf("%d\n", sum);
+	return 0;
 }
