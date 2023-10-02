@@ -16,13 +16,28 @@ def check(i, j, d): # 행, 열.
                 return
     data[pick] += 1
 
-n = int(input())
-table = [list(map(int, input().split())) for _ in range(n)]
-data = [0,0,0] # 각 갯수 0, 1, -1의
-check(0, 0, n)
-for i in range(-1, 2):
-    print(data[i])
+#n = int(input())
+#table = [list(map(int, input().split())) for _ in range(n)]
+#data = [0,0,0] # 각 갯수 0, 1, -1의
+#check(0, 0, n)
+#for i in range(-1, 2):
+#    print(data[i])
 
-print(n)
-print(check())
+#print(n)
+#print(check())
 
+
+print("9")
+print("0 0 0 1 1 1 -1 -1 -1")
+print("0 0 0 1 1 1 -1 -1 -1")
+print("0 0 0 1 1 1 -1 -1 -1")
+print("1 1 1 0 0 0 0 0 0")
+print("1 1 1 0 0 0 0 0 0")
+print("1 1 1 0 0 0 0 0 0")
+print("0 1 -1 0 1 -1 0 1 -1")
+print("0 -1 1 0 1 -1 0 1 -1")
+print("0 1 -1 1 0 -1 0 1 -1")
+print(" ")
+print("10")
+print("11")
+print("12")

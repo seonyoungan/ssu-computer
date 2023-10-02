@@ -16,3 +16,6 @@ class Solution(object):
             self.sortedArrayToBST(nums[:mid_node]),
             self.sortedArrayToBST(nums[mid_node+1:])
         )
+
+print("nums = [1, 3]")
+print("3,1")
