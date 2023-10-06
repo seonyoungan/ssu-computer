@@ -27,7 +27,7 @@
 			</div>
 			
 			<div class="form-group row">
-				<label class="col-sm-2">도명</label>
+				<label class="col-sm-2">도서명</label>
 				<div class="col-sm-3">
 					<input type="text" name="name" class="form-control">
 				</div>

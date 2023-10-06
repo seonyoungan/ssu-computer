@@ -1,4 +1,5 @@
 package dao;
+
 import java.util.ArrayList;
 import dto.Book;
 
@@ -47,28 +48,27 @@ public class BookRepository {
         listOfBooks.add(book3);
         
     }
-
+	
 	public ArrayList<Book> getAllBooks(){
 		return listOfBooks;
 	}
-	
-	public void addBook(Book book) { 
-		listOfBooks.add(book);
-	}
 
-    
-	public Book getBookById(String bookId){
-		Book bookById = null;
+		public void addBook(Book book) { 
+			listOfBooks.add(book);
+		}
 		
-		for (int i=0; i< listOfBooks.size(); i++) {
-			Book book = listOfBooks.get(i);
-			if (book != null && book.getBookId()!=null && book.getBookId().equals(bookId)) {
-				bookById = book;
+
+	public Book getBookById(String bookId){
+		Book bookByid=null;
+		
+		for(int i=0; i<listOfBooks.size(); i++){
+			Book book=listOfBooks.get(i);
+			if(book!=null && book.getBookId()!=null && book.getBookId().equals(bookId)){
+				bookByid=book;
 				break;
 			}
 		}
-		return bookById;
+		return bookByid;
 	}
-    
 }
  

@@ -6,8 +6,8 @@
 <%
 	request.setCharacterEncoding("utf-8");
 	
-	String bookId=request.getParameter("BookId");
-	String name=request.getParameter("name");
+	String bookId = request.getParameter("bookId");
+	String name = request.getParameter("name");
 	String unitPrice = request.getParameter("unitPrice");
 	String author = request.getParameter("author");
 	String publisher = request.getParameter("publisher");
@@ -23,10 +23,10 @@
 	if(unitPrice != null && unitPrice.isEmpty())	price=0;
 	else	price=Integer.valueOf(unitPrice);
 	
-	long stock;
+	Integer stock;
 	
 	if(unitsInStock != null && unitsInStock.isEmpty())	stock=0;
-	else	stock=Long.valueOf(unitsInStock);
+	else	stock=Integer.valueOf(unitsInStock);
 	
 	long pages;
 	
@@ -34,7 +34,7 @@
 	else	pages=Long.valueOf(totalPages);
 	
 	
-	BookRepository dao=BookRepository.getInstance();
+	BookRepository dao = BookRepository.getInstance();
 	
 	Book newBook=new Book();
 	newBook.setBookId(bookId);

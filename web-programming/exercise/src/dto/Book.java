@@ -6,7 +6,7 @@ public class Book implements Serializable{
 
 	private static final long serialVersionUID = -4274700572038677000L;
 	
-	private String BookId; //도서아이디
+	private String bookId; //도서아이디
 	private String pname; //상품명
 	private Integer unitPrice; //도서가격
 	private String description;; //도서설명
@@ -17,23 +17,23 @@ public class Book implements Serializable{
 	private long totalPages; //페이지 수
 	private String releaseDate; //출판일(월/년)
 	private String condition; //신규도서 또는 중고도서 또는 E-book
-	
+
 	public Book() {
 		super();
 	}
 
 	public Book(String bookId, String pname, Integer unitPrice) {
-		this.BookId = bookId;
+		this.bookId = bookId;
 		this.pname = pname;
 		this.unitPrice=unitPrice;
 	}
 	
 	public String getBookId() {
-		return BookId;
+		return bookId;
 	}
 
 	public void setBookId(String bookId) {
-		BookId = bookId;
+		this.bookId = bookId;
 	}
 
 	public String getPname() {
