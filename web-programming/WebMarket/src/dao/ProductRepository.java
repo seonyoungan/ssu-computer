@@ -5,7 +5,12 @@ import dto.Product;
 
 public class ProductRepository {
 
-	private ArrayList<Product> list0fProducts = new ArrayList<Product>();
+	private ArrayList<Product> listOfProducts = new ArrayList<Product>();
+	private static ProductRepository instance = new ProductRepository();
+	
+	public static ProductRepository getInstance() {
+		return instance;
+	}
 	
 	public ProductRepository() {
 		Product phone = new Product ("P1234", "iPhone 6s", 800000);
@@ -29,20 +34,23 @@ public class ProductRepository {
 		tablet.setUnitPrice(1000);
 		tablet.setCondition("01d");	
 		
-		list0fProducts.add(phone);
-		list0fProducts.add(notebook);
-		list0fProducts.add(tablet);
+		listOfProducts.add(phone);
+		listOfProducts.add(notebook);
+		listOfProducts.add(tablet);
 	}
 	
 	public ArrayList<Product> getAllProducts(){
-		return list0fProducts;
+		return listOfProducts;
 	}
-	
+	//6장
+		public void addProduct(Product product) { 
+			listOfProducts.add(product);
+		}
 	public Product getProductById(String productId){
 		Product productById = null;
 		
-		for (int i=0; i< list0fProducts.size(); i++) {
-			Product product = list0fProducts.get(i);
+		for (int i=0; i< listOfProducts.size(); i++) {
+			Product product = listOfProducts.get(i);
 			if (product != null && product.getProductId() != null && product.getProductId().equals(productId)) {
 				productById = product;
 				break;
@@ -52,4 +60,5 @@ public class ProductRepository {
 		return productById;
 	}
 	
+
 }

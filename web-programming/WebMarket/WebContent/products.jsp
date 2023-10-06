@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=utf-8" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="dto.Product" %>
-<jsp:useBean id="productDAO" class="dao.ProductRepository" scope="session" />
+<%@ page import="dao.ProductRepository" %>
 
 <html>
 <head>
@@ -16,14 +16,16 @@ href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 			<h1 class="display-3">상품목록</h1>
 		</div>
 	</div>
+
 <%
-	ArrayList<Product>list0fProducts=productDAO.getAllProducts();
+	ProductRepository dao = ProductRepository.getInstance();
+	ArrayList<Product>listOfProducts = dao.getAllProducts();
 %>
 <div class="container">
 	<div class="row" align="center">
 		<%
-			for (int i=0;i<list0fProducts.size();i++){
-			Product product = list0fProducts.get(i);	
+			for (int i=0;i<listOfProducts.size();i++){
+			Product product = listOfProducts.get(i);	
 		%>
 		<div class="col-md-4">
 			<h3><%=product.getPname()%></h3>
