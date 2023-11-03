@@ -11,6 +11,14 @@
 </head>
 <body>
 	<jsp:include page="menu.jsp" />
+	
+	<div class="container">
+		<div class="text-right">
+			<a href="?language=ko" >Korean</a> <a href="?language=en" >English</a>
+			<a href="logout.jsp" class="btn btn-sm btn=success pull-right">Logout</a>
+		</div>
+	</div>
+	
 	<div class="jumbotron">
 		<div class="container">
 			<h1 class="display-3">상품 등록</h1>
