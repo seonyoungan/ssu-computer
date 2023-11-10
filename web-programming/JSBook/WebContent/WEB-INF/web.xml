@@ -23,4 +23,9 @@
 			<form-error-page>/chap10/login_failed.jsp</form-error-page>
 		</form-login-config>
 	</login-config> 
+	
+	<error-page>
+		<error-type>java.lang.Exception</error-type>
+		<location>/ch11/exceptionType_error.jsp</location>
+	</error-page> 
 </web-app>
