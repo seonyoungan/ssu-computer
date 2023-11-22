@@ -1,0 +1,5 @@
+select e.employee_id, e.employee_name
+from employee e left join customer_banker b on e.employee_id = b.employee_id
+where b.customer_id != ''
+group by e.employee_id
+having count(b.customer_id)>=1;

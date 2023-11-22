@@ -1,0 +1,3 @@
+select customer_id
+from customer
+where customer_city = “서울”;

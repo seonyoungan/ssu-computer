@@ -1,24 +1,78 @@
 ##assignment02
 1.	"서울" 에 사는 모든 고객들의 이름을 출력하시오.
+```sql
+select customer_id
+from customer
+where customer_city = “서울”;
 
+```
 2.	고객이 사는 도시와 같은 은행에서 대출한 고객들의 이름을 출력하시오.
-
+```sql
+select distinct(customer_name)
+from customer a natural join borrower b natural join loan_branch c natural join branch d
+where a.customer_city = d.branch_city;
+```
 3.	가장 근무년수가 작은 직원들의 이름과 근무년수를 출력하시오.
-
+```sql
+select employee_name, employee_length
+from employee
+where employee_length = (select min(employee_length) from employee);
+```
 4.	최소 1명 이상의 고객을 맡고 있는 직원들의 이름과 고객의 수를 출력하시오.
-
+```sql
+select e.employee_id, e.employee_name
+from employee e left join customer_banker b on e.employee_id = b.employee_id
+where b.customer_id != ''
+group by e.employee_id
+having count(b.customer_id)>=1;
+```
 5.	성이 “김”인 고객들의 대출 금액을 합산해서 출력하시오.
-
+```sql
+select sum(c.amount) as sum
+from customer a natural join borrower b natural join loan c
+where a.customer_name like '김%';
+```
 6.	모든 은행의 자산 평균보다 더 많은 자산을 가진 은행의 이름을 출력하시오.
-
+```sql
+select branch_name
+from branch
+where assets > (select avg(assets) from branch);
+```
 7.	은행에 예금계좌를 가지고 있지만 대출계좌는 가지고 있지 않은 모든 고객들의 아이디와 이름을 출력하시오.
-
+```sql
+select a.customer_id, a.customer_name
+from customer a left outer join depositor b on (a.customer_id = b.customer_id)
+where b.customer_id is null;
+```
 8.	“서울”에 살고, 최소한 3개의 예금계좌를 가진 고객들의 아이디와 평균 예금을 출력하시오.
-
+```sql
+select customer_id, truncate(avg(balance),0)
+from customer natural join depositor natural join account
+group by customer_id, customer_city
+having count(customer_id) >= 3 and customer_city ="서울";
+```
 9.	“부산”에 위치하는 지점 중, 최소한 하나 이상의 지점보다 더 많은 자산을 가진 모든 지점의 이름을 출력하시오.
-
+```sql
+select branch_name
+from branch
+where assets >
+    (select min(assets)
+    from branch
+    where branch_city='부산');
+```
 10.	“서울”에 위치하는 모든 지점에 대출 계좌를 가진 모든 고객들의 아이디와 이름을 출력하시오.
-
+```sql
+with temp(customer_id,branch_name) as (select customer_id,branch_name from loan_branch natural join borrower natural join branch)
+    select distinct a.customer_id, a.customer_name
+    from customer a
+    where not exists
+        (select distinct branch_name
+        from branch
+        where branch_name not in
+            (select temp.branch_name
+            from temp
+            where temp.customer_id = a.customer_id) and branch_city = "서울");
+```
 11.	"홍길동"에게 직접, 간접적으로 관리되고 있는 직원들의 이름을 출력하시오. (재귀적 질의를 추천)
 
 12.	예금계좌의 잔고가 1,000만원 이상인 예금계좌는 그 잔고가 5% 증가되도록 하고, 그렇지 않은 예금계좌는 3% 증가되도록 변경하시오.

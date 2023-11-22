@@ -1,0 +1,4 @@
+select customer_id, truncate(avg(balance),0)
+from customer natural join depositor natural join account
+group by customer_id, customer_city
+having count(customer_id) >= 3 and customer_city ="서울";

@@ -1,0 +1,3 @@
+select a.customer_id, a.customer_name
+from customer a left outer join depositor b on (a.customer_id = b.customer_id)
+where b.customer_id is null;
