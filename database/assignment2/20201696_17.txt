@@ -1,0 +1,3 @@
+select customer_name
+from all_customer
+where branch_name = "숭실지점";

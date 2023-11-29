@@ -1,0 +1,4 @@
+with temp(employee_id) as (select employee_id from customer_banker natural join employee)
+delete from employee
+where employee_id not in (select employee_id
+    from temp);

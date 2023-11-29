@@ -1,0 +1,3 @@
+create view all_customer as
+select a.branch_name, c.customer_name
+from loan_branch a natural join borrower b natural join customer c;

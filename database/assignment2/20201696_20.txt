@@ -1,0 +1,10 @@
+create view customer_avg_balance as
+    (select c.customer_id, c.customer_name, avg(a.balance) as avg_balance
+      from customer c inner join depositor d
+      on c.customer_id = d.customer_id
+      inner join account a
+      on d.account_number = a.account_number
+      where c.customer_id in (select d.customer_id 
+         from depositor d where d.customer_id is not null)
+      group by c.customer_id
+   );
