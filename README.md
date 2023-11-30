@@ -21,6 +21,6 @@
 
 ## 4-2
 - [데이터베이스](./database)
-- [컴퓨터네트워크]
-- [인공지능]
+- [컴퓨터네트워크](./computer-network)
+- [인공지능](./artificial-intelligence)
 - [웹프로그래밍실습및설계](./web-programming)
